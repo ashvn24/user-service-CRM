@@ -9,12 +9,22 @@ services:
                python manage.py migrate &&
                python manage.py runserver 0.0.0.0:8000"
     volumes:
-      - .:/usr/src/app/
+      - .:/app
     ports:
       - "8000:8000"
     depends_on:
       - db-user
   
+  queue:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: 'python consumer.py'
+    depends_on:
+      - db-user
+    environment:
+      - CLOUDAMQP_URL=amqps://amjpxqaz:2_lHNNUatQZhMP5xbNO391K9-wx7GqMQ@puffin.rmq2.cloudamqp.com/amjpxqaz
+
   db-user:
     image: postgres
     container_name: db-user

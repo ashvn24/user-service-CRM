@@ -4,6 +4,7 @@ from . models import CustomUser
 from .serializer import UserSerializer, LoginSerialisers
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from .producer import publish
 # Create your views here.
 
 
@@ -12,7 +13,7 @@ class UserRegAPIView(generics.CreateAPIView):
     
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
-        
+        publish('user-created', {'email': response.data['email']})
         return Response(response.data, status=status.HTTP_201_CREATED)
     
     
@@ -27,6 +28,5 @@ class LoginAPIView(generics.CreateAPIView):
     
 class UserProfile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
-    # permission_classes = [IsAuthenticated]
     lookup_field = 'id'
     queryset= CustomUser.objects.all()
