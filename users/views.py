@@ -3,6 +3,7 @@ from rest_framework import generics, status
 from . models import CustomUser
 from .serializer import UserSerializer, LoginSerialisers
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 
@@ -23,3 +24,9 @@ class LoginAPIView(generics.CreateAPIView):
         serializer = self.get_serializer(data= request.data, context={'request':request})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status= status.HTTP_200_OK)
+    
+class UserProfile(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializer
+    # permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    queryset= CustomUser.objects.all()
