@@ -4,21 +4,24 @@ from django.contrib.auth import authenticate
 from rest_framework.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ['email', 'is_active', 'is_superuser', 'is_verified', 'is_staff', 'date_joined']
-        extra_kwargs = {'password': {'write_only': True}}
-        
+        fields = ['email', 'password', 'is_active', 'is_superuser', 'is_verified', 'is_staff', 'date_joined']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        
+        password = validated_data.pop('password', None)  # Handle if 'password' is not in validated_data
+
         instance = self.Meta.model(**validated_data)
-        if instance is not None:
+        if password is not None:
             instance.set_password(password)
         instance.save()
-        
+
         return instance
-    
 class LoginSerialisers(serializers.ModelSerializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)

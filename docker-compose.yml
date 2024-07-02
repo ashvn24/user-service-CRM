@@ -12,4 +12,18 @@ services:
       - .:/usr/src/app/
     ports:
       - "8000:8000"
-   
+    depends_on:
+      - db-user
+  
+  db-user:
+    image: postgres
+    container_name: db-user
+    environment:
+      - POSTGRES_DB=user
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=0089ashi
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+
+volumes:
+  pgdata:
